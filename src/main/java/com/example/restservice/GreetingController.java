@@ -1,10 +1,12 @@
 package com.example.restservice;
 
 import java.util.concurrent.atomic.AtomicLong;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
 public class GreetingController {
@@ -15,5 +17,11 @@ public class GreetingController {
 	@GetMapping("/greeting")
 	public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
 		return new Greeting(counter.incrementAndGet(), String.format(template, name));
+	}
+
+	@RequestMapping(value = "/redirect", method = RequestMethod.GET)
+	public void method(HttpServletResponse httpServletResponse) {
+		httpServletResponse.setHeader("Location", "http://google.com");
+		httpServletResponse.setStatus(302);
 	}
 }
