@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.restservice.model.Url;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
-  List<Url> findByHashContaining(String hash);
+  List<Url> findAllByHash(String hash);
 }
