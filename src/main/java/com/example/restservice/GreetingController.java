@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 public class GreetingController {
@@ -18,10 +20,10 @@ public class GreetingController {
 	public Greeting greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
 		return new Greeting(counter.incrementAndGet(), String.format(template, name));
 	}
-
-	@RequestMapping(value = "/redirect", method = RequestMethod.GET)
-	public void method(HttpServletResponse httpServletResponse) {
-		httpServletResponse.setHeader("Location", "http://google.com");
+	@RequestMapping(value = "/{hash}", method = RequestMethod.GET)
+	public void method(HttpServletResponse httpServletResponse,
+		@PathVariable("hash") String hash) {
+		httpServletResponse.setHeader("Location", String.format("http://www.google.com/search?q=%s",hash));
 		httpServletResponse.setStatus(302);
 	}
 }
