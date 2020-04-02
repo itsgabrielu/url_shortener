@@ -4,7 +4,8 @@ export const Example = () => {
     const [transformedUrl, setTransformedUrl] = useState('http://exampleOutput.com');
     const [inputVal, setInputVal] = useState('http://')
     const backendCall = (inputUrl) => {
-        const backendUrl = "http://localhost:8080/api/urls/"
+        let responseStatus
+        const backendUrl = "http://localhost:8080/urls/"
         fetch(backendUrl, {
             method: 'POST',
             headers: {
@@ -12,8 +13,18 @@ export const Example = () => {
             },
             body: JSON.stringify({ "actual": inputUrl })
         })
-            .then(response => response.json())
-            .then(body => setTransformedUrl(`${backendUrl}${body.hash}`))
+            .then(response => {
+                responseStatus = response.status
+                return response.json()
+            })
+            .then(body => {
+                if (responseStatus === 200) {
+                    setTransformedUrl(`${backendUrl}${body.hash}`)
+                } else {
+                    console.log('Something went wrong')
+                }
+            }
+            )
     }
 
     const handleSubmit = (e) => {
@@ -33,7 +44,7 @@ export const Example = () => {
                     Submit
                 </button>
             </form>
-            <a style={{ color: 'white' }} href={transformedUrl} target="_blank">{transformedUrl}</a>
+            <a style={{ color: 'white' }} href={transformedUrl} target="_blank" rel="noopener noreferrer">{transformedUrl}</a>
         </div>
     );
 }
