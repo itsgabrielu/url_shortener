@@ -21,12 +21,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import org.apache.commons.validator.routines.UrlValidator;
+
 import com.example.restservice.model.Url;
 import com.example.restservice.repository.UrlRepository;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api")
 public class UrlController {
 
   @Autowired
@@ -51,7 +52,7 @@ public class UrlController {
 //     }
 //   }
 
-  @GetMapping("/urls/{hash}")
+  @GetMapping("/{hash}")
   public ResponseEntity<Url> getUrlById(@PathVariable("hash") String hash) {
     List<Url> urls = urlRepository.findAllByHash(hash);
     if (urls.isEmpty()) {
@@ -73,7 +74,16 @@ public class UrlController {
   @PostMapping("/urls")
   public ResponseEntity<Url> createUrl(@RequestBody Url url) {
       try {
-          String randHash = UUID.randomUUID().toString().substring(0, 7);
+        String randHash = UUID.randomUUID().toString().substring(0, 7);
+
+        String[] schemes = {"http","https"};
+        UrlValidator urlValidator = new UrlValidator(schemes);
+
+        String actualString = url.getActual();
+        if (!urlValidator.isValid(actualString)) {
+            return new ResponseEntity<>(null, HttpStatus.EXPECTATION_FAILED);
+        }
+
           Url _url = urlRepository.save(new Url(randHash, url.getActual()));
           return new ResponseEntity<>(_url, HttpStatus.CREATED);
       } catch (Exception e) {
